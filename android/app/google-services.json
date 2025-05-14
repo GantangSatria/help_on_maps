@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "242543034495",
+    "project_id": "helponmaps",
+    "storage_bucket": "helponmaps.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242543034495:android:a6edaa953ec31d9bc53f4a",
+        "android_client_info": {
+          "package_name": "com.example.help_on_maps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwkH7tg561Ux3yMplGZUG6nMKTy6D8HN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
