@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class HelpRequestPage extends StatelessWidget {
-  const HelpRequestPage({super.key});
-  
+class HomePageScreen extends StatelessWidget {
+  const HomePageScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(30), 
+          padding: EdgeInsets.all(8), 
           child: ListView(
             children: [
               Text('test')
@@ -18,5 +18,4 @@ class HelpRequestPage extends StatelessWidget {
       ),
     );
   }
-  
 }

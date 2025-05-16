@@ -11,6 +11,10 @@ dependencies:
     sdk: flutter
   firebase_core: ^3.13.0
   get: ^4.7.2
+  flutter_map: ^8.1.1
+  location: ^8.0.0
+  latlong2: ^0.9.1
+  firebase_auth: ^5.5.3
 
 dev_dependencies:
   flutter_test:

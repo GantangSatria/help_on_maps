@@ -4,9 +4,10 @@ import 'package:help_on_maps/modules/home/controllers/home_controller.dart';
 import 'package:help_on_maps/modules/chat/views/chat_page.dart';
 import 'package:help_on_maps/modules/help_request/views/help_request_page.dart';
 import 'package:help_on_maps/modules/map/views/map_page.dart';
+import 'package:help_on_maps/routes/app_pages.dart';
 
 class HomePage extends GetView<HomeController> {
-  // const HomePage({super.key});
+  HomePage({super.key});
   
   final pages = [
     MapPage(),
@@ -17,6 +18,20 @@ class HomePage extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size(
+          double.infinity, 60 
+        ),
+        child: AppBar(
+          title: Text('Help Map'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () => Get.toNamed(AppPages.profilePage),
+            ),
+          ],
+        ),
+      ),
       body: pages[controller.selectedIndex.value],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: controller.selectedIndex.value,
