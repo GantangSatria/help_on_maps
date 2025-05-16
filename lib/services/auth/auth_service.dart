@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -27,27 +28,45 @@ class AuthService {
     return null;
   }
 
-  Future<User?> registerWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      var auth = FirebaseAuth.instance;
-      final credential = await auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      if (credential.user != null) {
-        return credential.user;
-      }
-      throw Exception("User registration failed.");
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      } else if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      }
-      throw Exception(e.message);
+Future<User?> registerWithEmailAndPassword({
+  required String email,
+  required String password,
+  required String name,
+  required List<String> roles,
+}) async {
+  try {
+    var auth = FirebaseAuth.instance;
+    final credential = await auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    if (credential.user != null) {
+      final user = credential.user!;
+      final firestore = FirebaseFirestore.instance;
+
+      await firestore.collection('users').doc(user.uid).set({
+        'name': name,
+        'email': email,
+        'roles': roles,
+        'createdAt': FieldValue.serverTimestamp(),
+        'location': {
+          'latitude': 0.0,
+          'longitude': 0.0,
+        },
+      });
+
+      return user;
     }
+
+    throw Exception("User registration failed.");
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
+      print('The account already exists for that email.');
+    } else if (e.code == 'weak-password') {
+      print('The password provided is too weak.');
+    }
+    throw Exception(e.message);
   }
+}
 }
