@@ -1,28 +1,17 @@
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:help_on_maps/services/profile/profile_service.dart';
 
 class ProfileController extends GetxController {
-  var user = Rxn<User>();
-  var userData = Rxn<Map<String, dynamic>>();
-  var isLoading = false.obs;
+  final ProfileService _service = Get.put(ProfileService());
+
+  Rxn<User>    get user     => _service.user;
+  Rxn<Map<String, dynamic>> get userData => _service.userData;
+  RxBool       get isLoading => _service.isLoading;
 
   @override
   void onInit() {
     super.onInit();
-    fetchUser();
-  }
-
-  void fetchUser() async {
-    isLoading.value = true;
-    user.value = FirebaseAuth.instance.currentUser;
-    if (user.value != null) {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.value!.uid)
-          .get();
-      userData.value = doc.data();
-    }
-    isLoading.value = false;
+    _service.fetchUser();
   }
 }
