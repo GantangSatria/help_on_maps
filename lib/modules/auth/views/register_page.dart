@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:help_on_maps/modules/auth/controllers/auth_controller.dart';
 import 'package:help_on_maps/modules/auth/controllers/register_controller.dart';
-import 'package:help_on_maps/services/auth/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
 
   final RegisterController controller = Get.put(RegisterController());
-  final authService = AuthService();
+  final authController = Get.put(AuthController());
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -59,7 +59,6 @@ class RegisterPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                // Add your AuthService call here
                 final roles = controller.selectedRoles;
                 if (roles.isEmpty) {
                   Get.snackbar(
@@ -69,7 +68,6 @@ class RegisterPage extends StatelessWidget {
                   return;
                 }
 
-                // Call your AuthService here with name, email, password, and roles
                 final name = nameController.text.trim();
                 final email = emailController.text.trim();
                 final password = passwordController.text;
@@ -88,23 +86,10 @@ class RegisterPage extends StatelessWidget {
                     barrierDismissible: false,
                   );
 
-                  final user = await authService.registerWithEmailAndPassword(
-                    name: name,
-                    email: email,
-                    password: password,
-                    roles: roles,
-                  );
+                  authController.register(email, password, name, roles);
 
-                  Get.back(); // remove loading
+                  Get.back(); 
 
-                  if (user != null) {
-                    Get.offAllNamed('/home'); // or your app's home route
-                  } else {
-                    Get.snackbar(
-                      "Registration Failed",
-                      "Unknown error occurred",
-                    );
-                  }
                 } catch (e) {
                   Get.back();
                   Get.snackbar("Error", e.toString());

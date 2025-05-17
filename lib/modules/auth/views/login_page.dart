@@ -12,7 +12,56 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Login'),),
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(labelText: 'Email'),
+            ),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(labelText: 'Password'),
+            ),
 
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () async {
+                final email = emailController.text.trim();
+                final password = passwordController.text;
+
+                if (email.isEmpty || password.isEmpty) {
+                  Get.snackbar(
+                    "Error",
+                    "Email, and Password cannot be empty",
+                  );
+                  return;
+                }
+
+                try {
+                  Get.dialog(
+                    Center(child: CircularProgressIndicator()),
+                    barrierDismissible: false,
+                  );
+
+                  authController.login(email, password);
+
+                  Get.back(); 
+                  
+                } catch (e) {
+                  Get.back();
+                  Get.snackbar("Error", e.toString());
+                }
+              }, 
+              child: const Text('Login')
+            ),
+          ],
+        ),
+      ),
     );
   }
   

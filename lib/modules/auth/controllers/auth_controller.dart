@@ -30,7 +30,7 @@ class AuthController extends GetxController {
     }
   }
 
-  void register(String email, String password, String name, List<String> role, String text) async {
+  void register(String email, String password, String name, List<String> role) async {
     try {
       final user = await AuthService().registerWithEmailAndPassword(
         email: email,
