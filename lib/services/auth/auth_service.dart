@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class AuthService {
   
@@ -19,9 +20,9 @@ class AuthService {
       throw Exception();
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        debugPrint('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        debugPrint('Wrong password provided for that user.');
       }
       // rethrow;
     }
@@ -62,9 +63,9 @@ Future<User?> registerWithEmailAndPassword({
     throw Exception("User registration failed.");
   } on FirebaseAuthException catch (e) {
     if (e.code == 'email-already-in-use') {
-      print('The account already exists for that email.');
+      debugPrint('The account already exists for that email.');
     } else if (e.code == 'weak-password') {
-      print('The password provided is too weak.');
+      debugPrint('The password provided is too weak.');
     }
     throw Exception(e.message);
   }

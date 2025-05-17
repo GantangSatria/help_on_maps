@@ -15,7 +15,7 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(32),
         child: Column(
           children: [
             TextField(
