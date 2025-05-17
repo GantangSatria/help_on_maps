@@ -12,6 +12,9 @@ class ProfilePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Profile')),
       body: Obx(() {
+        if (profileController.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        }
         final data = profileController.userData.value;
         return SafeArea(
           child: Padding(
