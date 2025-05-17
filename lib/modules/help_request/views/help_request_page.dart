@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:help_on_maps/data/models/help_request.dart';
+import 'package:help_on_maps/routes/app_pages.dart';
 
 class HelpRequestPage extends StatelessWidget {
   const HelpRequestPage({super.key});
@@ -48,14 +49,13 @@ class HelpRequestPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.toNamed('/create-help-request'),
+        onPressed: () => Get.toNamed(AppPages.createHelpRequestPage),
         child: Icon(Icons.add),
       ),
     );
   }
 
   void _offerHelp(HelpRequest request) {
-    // Update the help request with the helper's ID
     FirebaseFirestore.instance
         .collection('help_requests')
         .doc(request.id)
@@ -64,7 +64,6 @@ class HelpRequestPage extends StatelessWidget {
       'status': 'in_progress',
     });
 
-    // Navigate to chat with the user
     Get.toNamed('/chat', arguments: request.userId);
   }
 }
