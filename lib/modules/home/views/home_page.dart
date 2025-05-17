@@ -14,7 +14,7 @@ class HomePage extends GetView<HomeController> {
     HelpRequestPage(),
     ChatPage()
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(

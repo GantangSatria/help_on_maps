@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:help_on_maps/data/models/help_request.dart';
+import 'package:help_on_maps/modules/chat/controllers/chat_controller.dart';
 import 'package:help_on_maps/routes/app_pages.dart';
 
 class HelpRequestPage extends StatelessWidget {
-  const HelpRequestPage({super.key});
+  HelpRequestPage({super.key});
+
+  final chatController = Get.put(ChatController());
   
   @override
   Widget build(BuildContext context) {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     return Scaffold(
       body: SafeArea(
         child: StreamBuilder<QuerySnapshot>(
@@ -38,7 +42,7 @@ class HelpRequestPage extends StatelessWidget {
                     title: Text(request.title),
                     subtitle: Text('${request.description} \nStatus: ${request.status}' ),
                     trailing: ElevatedButton(
-                      onPressed: () => _offerHelp(request),
+                      onPressed: () => _offerHelp(request, currentUserId!),
                       child: Text('Offer Help'),
                     ),
                   ),
@@ -55,15 +59,20 @@ class HelpRequestPage extends StatelessWidget {
     );
   }
 
-  void _offerHelp(HelpRequest request) {
-    FirebaseFirestore.instance
+  Future<void> _offerHelp(HelpRequest request, String currentUserId) async {
+    await FirebaseFirestore.instance
         .collection('help_requests')
         .doc(request.id)
         .update({
-      'helperId': FirebaseAuth.instance.currentUser?.uid,
+      'helperId': currentUserId,
       'status': 'in_progress',
     });
 
-    Get.toNamed('/chat', arguments: request.userId);
+    final chatId = await chatController.getOrCreateChatId(request.userId);
+
+    Get.toNamed(AppPages.chatPageDetail, arguments: {
+      'chatId': chatId,
+      'otherUserId': request.userId,
+    });
   }
 }
