@@ -14,7 +14,7 @@ class MapPage extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('help_requests')
-            .where('status', isEqualTo: 'active')
+            .where('status', isNotEqualTo: 'completed')
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -26,7 +26,6 @@ class MapPage extends StatelessWidget {
               initialCenter: LatLng(-7.9480831, 112.6198023),
               initialZoom: 15.2,
               onTap: (_, __) {
-                // Handle map tap if needed
               },
             ),
             children: [
@@ -85,6 +84,8 @@ class MapPage extends StatelessWidget {
               },
               child: Text('Chat with User'),
             ),
+            SizedBox(height: 16),
+            Text('Status: ${request.status}')
           ],
         ),
       ),
