@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:help_on_maps/modules/auth/controllers/auth_controller.dart';
+import 'package:help_on_maps/routes/app_pages.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
-  
+
   final authController = Get.put(AuthController());
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -12,7 +13,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login'),),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -35,10 +36,7 @@ class LoginPage extends StatelessWidget {
                 final password = passwordController.text;
 
                 if (email.isEmpty || password.isEmpty) {
-                  Get.snackbar(
-                    "Error",
-                    "Email, and Password cannot be empty",
-                  );
+                  Get.snackbar("Error", "Email, and Password cannot be empty");
                   return;
                 }
 
@@ -50,19 +48,32 @@ class LoginPage extends StatelessWidget {
 
                   authController.login(email, password);
 
-                  Get.back(); 
-                  
+                  Get.back();
                 } catch (e) {
                   Get.back();
                   Get.snackbar("Error", e.toString());
                 }
-              }, 
-              child: const Text('Login')
+              },
+              child: const Text('Login'),
+            ),
+            SizedBox(height: 22),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Belum punya akun? "),
+                GestureDetector(
+                  onTap: () => Get.offNamed(AppPages.registerPage),
+                  child: const Text(
+                    "Daftar",
+                    style: TextStyle(color: Color(0xff3498DB)),
+                  ),
+                ),
+                Text(' sekarang'),
+              ],
             ),
           ],
         ),
       ),
     );
   }
-  
 }

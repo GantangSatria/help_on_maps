@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:help_on_maps/modules/auth/controllers/auth_controller.dart';
 import 'package:help_on_maps/modules/auth/controllers/register_controller.dart';
+import 'package:help_on_maps/routes/app_pages.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key});
@@ -88,14 +89,27 @@ class RegisterPage extends StatelessWidget {
 
                   authController.register(email, password, name, roles);
 
-                  Get.back(); 
-
+                  Get.back();
                 } catch (e) {
                   Get.back();
                   Get.snackbar("Error", e.toString());
                 }
               },
               child: const Text('Register'),
+            ),
+            SizedBox(height: 22),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Sudah punya akun? "),
+                GestureDetector(
+                  onTap: () => Get.offNamed(AppPages.loginPage),
+                  child: const Text(
+                    "Masuk",
+                    style: TextStyle(color: Color(0xff3498DB)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
