@@ -15,7 +15,7 @@ class HelpRequestPage extends StatelessWidget {
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('help_requests')
-              .where('status', isEqualTo: 'active')
+              .where('status', isNotEqualTo: 'completed')
               .orderBy('createdAt', descending: true)
               .snapshots(),
           builder: (context, snapshot) {
@@ -36,7 +36,7 @@ class HelpRequestPage extends StatelessWidget {
                   margin: EdgeInsets.only(bottom: 16),
                   child: ListTile(
                     title: Text(request.title),
-                    subtitle: Text(request.description),
+                    subtitle: Text('${request.description} \nStatus: ${request.status}' ),
                     trailing: ElevatedButton(
                       onPressed: () => _offerHelp(request),
                       child: Text('Offer Help'),
