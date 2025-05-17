@@ -65,6 +65,13 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(onPressed: () {profileController.logout();}, child: Text('Logout'))
+                  ],
+                )
               ],
             ),
           ),
