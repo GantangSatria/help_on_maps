@@ -8,6 +8,5 @@ class ChatPage extends StatelessWidget {
     return Scaffold(
       
     );
-  }
-  
+  } 
 }
