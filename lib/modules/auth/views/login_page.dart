@@ -144,7 +144,7 @@ class LoginPage extends StatelessWidget {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(double.infinity, 55),
+                      minimumSize: Size(double.infinity, 50),
                       backgroundColor: Colors.blueAccent,
                       foregroundColor: Colors.white,
                     ),
@@ -165,71 +165,12 @@ class LoginPage extends StatelessWidget {
                       Text(' sekarang'),
                     ],
                   ),
-                  const SizedBox(height: 250),
+                  const SizedBox(height: 270),
                 ],
               ),
             ),
           ),
         ],
-
-        //     child: Column(
-        //       children: [
-        //         TextField(
-        //           controller: emailController,
-        //           decoration: InputDecoration(labelText: 'Email'),
-        //         ),
-        //         TextField(
-        //           controller: passwordController,
-        //           obscureText: true,
-        //           decoration: InputDecoration(labelText: 'Password'),
-        //         ),
-
-        //         const SizedBox(height: 20),
-
-        // ElevatedButton(
-        //   onPressed: () async {
-        //     final email = emailController.text.trim();
-        //     final password = passwordController.text;
-
-        //     if (email.isEmpty || password.isEmpty) {
-        //       Get.snackbar("Error", "Email, and Password cannot be empty");
-        //       return;
-        //     }
-
-        //     try {
-        //       Get.dialog(
-        //         Center(child: CircularProgressIndicator()),
-        //         barrierDismissible: false,
-        //       );
-
-        //       authController.login(email, password);
-
-        //       Get.back();
-        //     } catch (e) {
-        //       Get.back();
-        //       Get.snackbar("Error", e.toString());
-        //     }
-        //   },
-        //   child: const Text('Login'),
-        // ),
-        // SizedBox(height: 22),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     Text("Belum punya akun? "),
-        //     GestureDetector(
-        //       onTap: () => Get.offNamed(AppPages.registerPage),
-        //       child: const Text(
-        //         "Daftar",
-        //         style: TextStyle(color: Color(0xff3498DB)),
-        //       ),
-        //     ),
-        //     Text(' sekarang'),
-        //   ],
-        // ),
-        //       ],
-        //     ),
-        //   ),
       ),
     );
   }
