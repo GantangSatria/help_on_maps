@@ -6,11 +6,13 @@ import 'package:help_on_maps/data/models/help_request.dart';
 import 'package:help_on_maps/modules/chat/controllers/chat_controller.dart';
 import 'package:help_on_maps/modules/home/controllers/home_controller.dart';
 import 'package:help_on_maps/routes/app_pages.dart';
+import 'package:help_on_maps/services/chat/chat_service.dart';
 
 class HelpRequestPage extends StatelessWidget {
   HelpRequestPage({super.key});
 
-  final chatController = Get.put(ChatController());
+  final ChatService chatService = Get.put(ChatService());
+  final chatController = Get.put(ChatController(Get.find()));
   final homeController = Get.find<HomeController>();
 
   @override
@@ -72,7 +74,7 @@ class HelpRequestPage extends StatelessWidget {
                               Text(request.description),
                               SizedBox(height: 4),
                               FutureBuilder<String>(
-                                future: chatController.getUserName(
+                                future: chatController.userName(
                                   request.userId,
                                 ),
                                 builder: (context, snapshot) {
@@ -115,7 +117,7 @@ class HelpRequestPage extends StatelessWidget {
                                       onPressed:
                                           () => _completeRequest(request),
                                       child: Text('Request Completed'),
-                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -143,7 +145,6 @@ class HelpRequestPage extends StatelessWidget {
         .doc(request.id)
         .update({'helperId': currentUserId, 'status': 'in_progress'});
 
-    final chatController = Get.find<ChatController>();
     final chatId = await chatController.getOrCreateChatId(request.userId);
 
     Get.toNamed(

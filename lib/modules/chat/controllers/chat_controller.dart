@@ -1,86 +1,43 @@
+import 'dart:async';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:help_on_maps/data/models/chat_model.dart';
+import 'package:help_on_maps/services/chat/chat_service.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import '../../../data/models/chat_model.dart';
 
 class ChatController extends GetxController {
-  final currentUser = FirebaseAuth.instance.currentUser;
-  var chatUsers = <Map<String, dynamic>>[].obs;
-  var messages = <ChatMessage>[].obs;
+  ChatController(this._service);
 
-  void fetchChatUsers() {
-    FirebaseFirestore.instance
-        .collection('chats')
-        .where('participants', arrayContains: currentUser!.uid)
-        .snapshots()
-        .listen((snapshot) {
-          chatUsers.value =
-              snapshot.docs.map((doc) {
-                final data = doc.data();
-                final otherUserId = (data['participants'] as List).firstWhere(
-                  (id) => id != currentUser!.uid,
-                );
-                return {'chatId': doc.id, 'otherUserId': otherUserId};
-              }).toList();
-        });
+  final ChatService _service;
+
+  final chats    = <Map<String, dynamic>>[].obs;
+  final messages = <ChatMessage>[].obs;
+
+  late final StreamSubscription _chatSub;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _chatSub = _service.chats().listen(chats.assignAll);
   }
 
-  void fetchMessages(String chatId) {
-    FirebaseFirestore.instance
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .orderBy('timestamp')
-        .snapshots()
-        .listen((snapshot) {
-          messages.value =
-              snapshot.docs
-                  .map((doc) => ChatMessage.fromFirestore(doc))
-                  .toList();
-        });
+  void listenMessages(String chatId) {
+    messages.clear();
+    _service.messages(chatId).listen(messages.assignAll);
   }
 
-  Future<void> sendMessage(String chatId, String text) async {
-    final msg = ChatMessage(
-      id: '',
-      chatId: chatId,
-      senderId: currentUser!.uid,
-      text: text,
-      timestamp: DateTime.now(),
-    );
-    await FirebaseFirestore.instance
-        .collection('chats')
-        .doc(chatId)
-        .collection('messages')
-        .add(msg.toMap());
-  }
+  Future<void> send(String chatId, String text) =>
+      _service.sendMessage(chatId, text);
 
-  Future<String> getOrCreateChatId(String otherUserId) async {
-    final chats =
-        await FirebaseFirestore.instance
-            .collection('chats')
-            .where('participants', arrayContains: currentUser!.uid)
-            .get();
+  Future<String> userName(String uid) => _service.userName(uid);
 
-    for (var doc in chats.docs) {
-      final participants = List<String>.from(doc['participants']);
-      if (participants.contains(otherUserId)) {
-        return doc.id;
-      }
-    }
+  String timeAgo(DateTime? ts) => ts == null ? '' : timeago.format(ts);
 
-    final doc = await FirebaseFirestore.instance.collection('chats').add({
-      'participants': [currentUser!.uid, otherUserId],
-    });
-    return doc.id;
-  }
+  Future<String> getOrCreateChatId(String otherUid) =>
+    _service.getOrCreateChatId(otherUid);
 
-  Future<String> getUserName(String userId) async {
-    if (userId.isEmpty) {
-      return 'Unknown';
-    }
-    final doc =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return doc.data()?['name'] ?? 'Unknown';
+  @override
+  void onClose() {
+    _chatSub.cancel();
+    super.onClose();
   }
 }
