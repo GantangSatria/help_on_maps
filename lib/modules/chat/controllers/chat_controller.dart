@@ -14,16 +14,15 @@ class ChatController extends GetxController {
         .where('participants', arrayContains: currentUser!.uid)
         .snapshots()
         .listen((snapshot) {
-      chatUsers.value = snapshot.docs.map((doc) {
-        final data = doc.data();
-        final otherUserId = (data['participants'] as List)
-            .firstWhere((id) => id != currentUser!.uid);
-        return {
-          'chatId': doc.id,
-          'otherUserId': otherUserId,
-        };
-      }).toList();
-    });
+          chatUsers.value =
+              snapshot.docs.map((doc) {
+                final data = doc.data();
+                final otherUserId = (data['participants'] as List).firstWhere(
+                  (id) => id != currentUser!.uid,
+                );
+                return {'chatId': doc.id, 'otherUserId': otherUserId};
+              }).toList();
+        });
   }
 
   void fetchMessages(String chatId) {
@@ -34,9 +33,11 @@ class ChatController extends GetxController {
         .orderBy('timestamp')
         .snapshots()
         .listen((snapshot) {
-      messages.value =
-          snapshot.docs.map((doc) => ChatMessage.fromFirestore(doc)).toList();
-    });
+          messages.value =
+              snapshot.docs
+                  .map((doc) => ChatMessage.fromFirestore(doc))
+                  .toList();
+        });
   }
 
   Future<void> sendMessage(String chatId, String text) async {
@@ -55,10 +56,11 @@ class ChatController extends GetxController {
   }
 
   Future<String> getOrCreateChatId(String otherUserId) async {
-    final chats = await FirebaseFirestore.instance
-        .collection('chats')
-        .where('participants', arrayContains: currentUser!.uid)
-        .get();
+    final chats =
+        await FirebaseFirestore.instance
+            .collection('chats')
+            .where('participants', arrayContains: currentUser!.uid)
+            .get();
 
     for (var doc in chats.docs) {
       final participants = List<String>.from(doc['participants']);
@@ -74,7 +76,11 @@ class ChatController extends GetxController {
   }
 
   Future<String> getUserName(String userId) async {
-  final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-  return doc.data()?['name'] ?? 'Unknown';
+    if (userId.isEmpty) {
+      return 'Unknown';
+    }
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    return doc.data()?['name'] ?? 'Unknown';
   }
 }

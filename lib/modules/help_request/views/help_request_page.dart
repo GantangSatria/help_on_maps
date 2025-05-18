@@ -16,6 +16,7 @@ class HelpRequestPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    print('Current User ID: $currentUserId');
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -62,41 +63,62 @@ class HelpRequestPage extends StatelessWidget {
                       return Card(
                         margin: EdgeInsets.only(bottom: 16),
                         child: ListTile(
-                          title: Text(request.title),
-                          subtitle: Text(
-                            '${request.description} \nStatus: ${request.status}',
+                          title: Text(
+                            request.title,
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          trailing: Wrap(
-                            spacing: 8,
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ElevatedButton(
-                                onPressed:
-                                    () => _offerHelp(request, currentUserId!),
-                                child: Text('Offer Help'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  homeController.focusOnRequest(request.location, request.id);
-                                },
-                                child: Text('Get Location'),
-                              ),
-                              if (isOwnRequest)
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    await FirebaseFirestore.instance
-                                        .collection('help_requests')
-                                        .doc(request.id)
-                                        .update({'status': 'completed'});
-                                    Get.snackbar(
-                                      'Success',
-                                      'Request marked as completed',
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                  ),
-                                  child: Text('Request Completed'),
+                              Text(request.description),
+                              SizedBox(height: 4),
+                              FutureBuilder<String>(
+                                future: chatController.getUserName(
+                                  request.userId,
                                 ),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Text('Requester: Loading...');
+                                  }
+                                  return Text(
+                                    'Requester: ${snapshot.data ?? 'Unknown'}',
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Status: ${request.status}',
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                              SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 4,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed:
+                                        () =>
+                                            _offerHelp(request, currentUserId!),
+                                    child: Text('Offer Help'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      homeController.focusOnRequest(
+                                        request.location,
+                                        request.id,
+                                      );
+                                    },
+                                    child: Text('Get Location'),
+                                  ),
+                                  if (isOwnRequest)
+                                    ElevatedButton(
+                                      onPressed:
+                                          () => _completeRequest(request),
+                                      child: Text('Request Completed'),
+                                    ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -122,11 +144,24 @@ class HelpRequestPage extends StatelessWidget {
         .doc(request.id)
         .update({'helperId': currentUserId, 'status': 'in_progress'});
 
+    final chatController = Get.find<ChatController>();
     final chatId = await chatController.getOrCreateChatId(request.userId);
 
     Get.toNamed(
       AppPages.chatPageDetail,
       arguments: {'chatId': chatId, 'otherUserId': request.userId},
     );
+  }
+
+  Future<void> _completeRequest(request) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('help_requests')
+          .doc(request.id)
+          .update({'status': 'completed'});
+      Get.snackbar('Success', 'Request marked as completed');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to mark request as completed.');
+    }
   }
 }
