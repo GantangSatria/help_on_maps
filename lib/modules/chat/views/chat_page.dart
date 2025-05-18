@@ -4,10 +4,10 @@ import 'package:help_on_maps/modules/chat/controllers/chat_controller.dart';
 import 'package:help_on_maps/routes/app_pages.dart';
 
 class ChatPage extends StatelessWidget {
-  final ChatController controller = Get.put(ChatController());
+  final chatController = Get.put(ChatController());
 
   ChatPage({super.key}) {
-    controller.fetchChatUsers();
+    chatController.fetchChatUsers();
   }
 
   @override
@@ -15,21 +15,31 @@ class ChatPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Chats')),
       body: Obx(() {
-        if (controller.chatUsers.isEmpty) {
+        if (chatController.chatUsers.isEmpty) {
           return Center(child: Text('No chats yet.'));
         }
         return ListView.builder(
-          itemCount: controller.chatUsers.length,
+          itemCount: chatController.chatUsers.length,
           itemBuilder: (context, index) {
-            final chat = controller.chatUsers[index];
+            final chat = chatController.chatUsers[index];
             return ListTile(
-              title: Text(
-                'User: ${chat['otherUserId']}',
+              leading: CircleAvatar(),
+              title: FutureBuilder<String>(
+                future: chatController.getUserName(chat['otherUserId']),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text('Loading...');
+                  }
+                  return Text(snapshot.data ?? 'Unknown');
+                },
               ),
               onTap: () {
                 Get.toNamed(
                   AppPages.chatPageDetail,
-                  arguments: {'chatId': chat['chatId'], 'otherUserId': chat['otherUserId']},
+                  arguments: {
+                    'chatId': chat['chatId'],
+                    'otherUserId': chat['otherUserId'],
+                  },
                 );
               },
             );

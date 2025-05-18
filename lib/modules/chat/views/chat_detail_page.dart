@@ -7,7 +7,7 @@ import 'package:help_on_maps/modules/chat/widgets/chat_buble.dart';
 class ChatDetailPage extends StatelessWidget {
   // final String chatId;
   // final String otherUserId;
-  final ChatController controller = Get.find();
+  final chatController = Get.put(ChatController());
 
   ChatDetailPage({super.key});
 
@@ -19,25 +19,37 @@ class ChatDetailPage extends StatelessWidget {
     final chatId = args['chatId'] as String;
     final otherUserId = args['otherUserId'] as String;
 
-    controller.fetchMessages(chatId);
+    chatController.fetchMessages(chatId);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Chat with $otherUserId')),
+      appBar: AppBar(
+        title: FutureBuilder<String>(
+          future: chatController.getUserName(
+            otherUserId,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text('Loading...');
+            }
+            return Text('Chat with ${snapshot.data ?? 'Unknown'}');
+          },
+        ),
+      ),
       body: Padding(
         padding: EdgeInsets.only(left: 8, right: 8, bottom: 16),
-        // const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Column(
           children: [
             Expanded(
               child: Obx(
                 () => ListView.builder(
-                  itemCount: controller.messages.length,
+                  itemCount: chatController.messages.length,
                   itemBuilder: (context, index) {
-                    final msg = controller.messages[index];
+                    final msg = chatController.messages[index];
                     return ChatBubble(
                       text: msg.text,
                       isMe:
-                      msg.senderId == FirebaseAuth.instance.currentUser?.uid,
+                          msg.senderId ==
+                          FirebaseAuth.instance.currentUser?.uid,
                     );
                   },
                 ),
@@ -57,7 +69,7 @@ class ChatDetailPage extends StatelessWidget {
                     icon: Icon(Icons.send),
                     onPressed: () {
                       if (_msgController.text.trim().isNotEmpty) {
-                        controller.sendMessage(
+                        chatController.sendMessage(
                           chatId,
                           _msgController.text.trim(),
                         );

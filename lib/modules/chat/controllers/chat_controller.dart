@@ -72,4 +72,9 @@ class ChatController extends GetxController {
     });
     return doc.id;
   }
+
+  Future<String> getUserName(String userId) async {
+  final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  return doc.data()?['name'] ?? 'Unknown';
+  }
 }
