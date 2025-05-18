@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:help_on_maps/modules/home/controllers/home_controller.dart';
 import 'package:help_on_maps/modules/map/controllers/map_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:help_on_maps/data/models/help_request.dart';
@@ -9,15 +10,24 @@ class MapPage extends StatelessWidget {
   MapPage({super.key});
 
   final mapPageController = Get.put(MapPageController());
+  final homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Obx(() {
+        // final focusLocation = homeController.focusLocation.value;
+        final highlightRequestId = homeController.highlightRequestId.value;
         final currentLoc = mapPageController.currentLocation.value;
-        if (currentLoc == null) {
-          return Center(child: CircularProgressIndicator());
-        }
+        // if (currentLoc == null) {
+        //   return Center(child: CircularProgressIndicator());
+        // }
+        // if (focusLocation != null) {
+        //   WidgetsBinding.instance.addPostFrameCallback((_) {
+        //     mapController.move(focusLocation, 17);
+        //     homeController.focusLocation.value = null;
+        //   });
+        // }
         return StreamBuilder<QuerySnapshot>(
           stream:
               FirebaseFirestore.instance
@@ -25,7 +35,16 @@ class MapPage extends StatelessWidget {
                   .where('status', isNotEqualTo: 'completed')
                   .snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+            if (!snapshot.hasData || currentLoc == null) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            // if (mapReady && focusLocation != null) {
+            //   WidgetsBinding.instance.addPostFrameCallback((_) {
+            //     mapController.move(focusLocation, 17);
+            //     homeController.focusLocation.value = null;
+            //   });
+            // }
             final markers = <Marker>[
               Marker(
                 point: currentLoc,
@@ -35,13 +54,18 @@ class MapPage extends StatelessWidget {
               ),
               ...snapshot.data!.docs.map((doc) {
                 final request = HelpRequest.fromFirestore(doc);
+                final isHighlighted = request.id == highlightRequestId;
                 return Marker(
                   point: request.location,
-                  width: 40,
-                  height: 40,
+                  width: isHighlighted ? 50 : 40,
+                  height: isHighlighted ? 50 : 40,
                   child: GestureDetector(
                     onTap: () => _showHelpRequestDetails(context, request),
-                    child: Icon(Icons.location_on, color: Colors.red, size: 40),
+                    child: Icon(
+                      Icons.location_on,
+                      color: isHighlighted ? Colors.green : Colors.red,
+                      size: isHighlighted ? 50 : 40,
+                    ),
                   ),
                 );
               }),
@@ -60,17 +84,20 @@ class MapPage extends StatelessWidget {
                   userAgentPackageName: 'com.example.app',
                 ),
                 MarkerLayer(markers: markers),
-                  Obx(() => mapPageController.routePoints.isNotEmpty
-                    ? PolylineLayer(
-                        polylines: [
-                          Polyline(
-                            points: mapPageController.routePoints,
-                            color: Colors.blue,
-                            strokeWidth: 4.0,
-                          ),
-                        ],
-                      )
-                    : SizedBox.shrink()),
+                Obx(
+                  () =>
+                      mapPageController.routePoints.isNotEmpty
+                          ? PolylineLayer(
+                            polylines: [
+                              Polyline(
+                                points: mapPageController.routePoints,
+                                color: Colors.blue,
+                                strokeWidth: 4.0,
+                              ),
+                            ],
+                          )
+                          : SizedBox.shrink(),
+                ),
               ],
             );
           },
