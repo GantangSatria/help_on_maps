@@ -16,7 +16,6 @@ class HelpRequestPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    print('Current User ID: $currentUserId');
     return Scaffold(
       body: SafeArea(
         child: Column(
