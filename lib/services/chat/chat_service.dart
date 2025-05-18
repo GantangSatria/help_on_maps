@@ -85,7 +85,7 @@ class ChatService {
   }
 
 Future<String> userName(String uid) async {
-  if (uid == null || uid.isEmpty) {
+  if (uid.isEmpty) {
     return 'Unknown User';
   }
   final doc = await _firestore.collection('users').doc(uid).get();

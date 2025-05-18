@@ -15,6 +15,7 @@ class MapPageController extends GetxController {
   final requests        = <HelpRequest>[].obs;
   String? get highlightRequestId => homeController.highlightRequestId.value;
 
+  // ignore: unused_field
   LatLng? _destination;
 
   @override
