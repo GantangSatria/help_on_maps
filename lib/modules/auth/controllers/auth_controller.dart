@@ -7,6 +7,12 @@ class AuthController extends GetxController {
   final _auth = FirebaseAuth.instance;
   final Rx<User?> firebaseUser = Rx<User?>(null);
 
+  var isPasswordVisible = false.obs;
+
+    void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
+
   @override
   void onInit() {
     super.onInit();
