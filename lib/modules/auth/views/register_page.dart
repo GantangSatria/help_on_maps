@@ -22,22 +22,17 @@ class RegisterPage extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
+          physics: ClampingScrollPhysics(),
+          child: Stack(
             children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/RegisterImage4.png',
-                  fit: BoxFit.fitWidth,
-                  height: 50,
-                ),
+              Image.asset(
+                'assets/images/RegisterImage4.png',
+                fit: BoxFit.fitWidth,
+                height: 100,
+                width: double.infinity,
               ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
+              Padding(
+                padding: const EdgeInsets.only(top: 80),
                 child: Container(
                   padding: const EdgeInsets.all(32),
                   decoration: const BoxDecoration(
@@ -285,7 +280,7 @@ class RegisterPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 100)
+                      SizedBox(height: 100),
                     ],
                   ),
                 ),

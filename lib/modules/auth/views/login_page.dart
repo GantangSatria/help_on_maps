@@ -17,22 +17,17 @@ class LoginPage extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
+          physics: ClampingScrollPhysics(),
+          child: Stack(
             children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/LoginImage.png',
-                  fit: BoxFit.cover,
-                  height: 200,
-                ),
+              Image.asset(
+                'assets/images/LoginImage.png',
+                fit: BoxFit.cover,
+                height: 200,
+                width: double.infinity,
               ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
+              Padding(
+                padding: const EdgeInsets.only(top: 180),
                 child: Container(
                   padding: const EdgeInsets.all(32),
                   decoration: const BoxDecoration(
