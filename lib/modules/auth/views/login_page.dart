@@ -180,7 +180,7 @@ class LoginPage extends StatelessWidget {
                           Text(' sekarang'),
                         ],
                       ),
-                      const SizedBox(height: 150),
+                      const SizedBox(height: 250),
                     ],
                   ),
                 ),

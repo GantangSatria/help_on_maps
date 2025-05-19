@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:help_on_maps/data/models/help_request.dart';
 import 'package:help_on_maps/modules/chat/controllers/chat_controller.dart';
+import 'package:help_on_maps/modules/help_request/controllers/help_request_controller.dart';
 import 'package:help_on_maps/modules/home/controllers/home_controller.dart';
 import 'package:help_on_maps/routes/app_pages.dart';
 import 'package:help_on_maps/services/chat/chat_service.dart';
@@ -11,6 +11,7 @@ import 'package:help_on_maps/services/chat/chat_service.dart';
 class HelpRequestPage extends StatelessWidget {
   HelpRequestPage({super.key});
 
+  final controller = Get.put(HelpRequestController());
   final ChatService chatService = Get.put(ChatService());
   final chatController = Get.put(ChatController(Get.find()));
   final homeController = Get.find<HomeController>();
@@ -37,13 +38,8 @@ class HelpRequestPage extends StatelessWidget {
             SizedBox(height: 8),
 
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance
-                        .collection('help_requests')
-                        .where('status', isNotEqualTo: 'completed')
-                        .orderBy('createdAt', descending: true)
-                        .snapshots(),
+              child: StreamBuilder<List<HelpRequest>>(
+                stream: controller.requestsStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
@@ -53,13 +49,12 @@ class HelpRequestPage extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   }
 
+                  final list = snapshot.data ?? [];
                   return ListView.builder(
                     padding: EdgeInsets.all(16),
-                    itemCount: snapshot.data!.docs.length,
+                    itemCount: list.length,
                     itemBuilder: (context, index) {
-                      HelpRequest request = HelpRequest.fromFirestore(
-                        snapshot.data!.docs[index],
-                      );
+                      final request = list[index];
                       final isOwnRequest = request.userId == currentUserId;
                       return Card(
                         margin: EdgeInsets.only(bottom: 16),
@@ -100,7 +95,7 @@ class HelpRequestPage extends StatelessWidget {
                                   ElevatedButton(
                                     onPressed:
                                         () =>
-                                            _offerHelp(request, currentUserId!),
+                                            controller.offerHelp(request.id, request.userId),
                                     child: Text('Offer Help'),
                                   ),
                                   ElevatedButton(
@@ -115,7 +110,7 @@ class HelpRequestPage extends StatelessWidget {
                                   if (isOwnRequest)
                                     ElevatedButton(
                                       onPressed:
-                                          () => _completeRequest(request),
+                                          () => controller.completeRequest(request.id),
                                       child: Text('Request Completed'),
                                   ),
                                 ],
@@ -139,29 +134,29 @@ class HelpRequestPage extends StatelessWidget {
     );
   }
 
-  Future<void> _offerHelp(HelpRequest request, String currentUserId) async {
-    await FirebaseFirestore.instance
-        .collection('help_requests')
-        .doc(request.id)
-        .update({'helperId': currentUserId, 'status': 'in_progress'});
+  // Future<void> _offerHelp(HelpRequest request, String currentUserId) async {
+  //   await FirebaseFirestore.instance
+  //       .collection('help_requests')
+  //       .doc(request.id)
+  //       .update({'helperId': currentUserId, 'status': 'in_progress'});
 
-    final chatId = await chatController.getOrCreateChatId(request.userId);
+  //   final chatId = await chatController.getOrCreateChatId(request.userId);
 
-    Get.toNamed(
-      AppPages.chatPageDetail,
-      arguments: {'chatId': chatId, 'otherUserId': request.userId},
-    );
-  }
+  //   Get.toNamed(
+  //     AppPages.chatPageDetail,
+  //     arguments: {'chatId': chatId, 'otherUserId': request.userId},
+  //   );
+  // }
 
-  Future<void> _completeRequest(request) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('help_requests')
-          .doc(request.id)
-          .update({'status': 'completed'});
-      Get.snackbar('Success', 'Request marked as completed');
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to mark request as completed.');
-    }
-  }
+  // Future<void> _completeRequest(request) async {
+  //   try {
+  //     await FirebaseFirestore.instance
+  //         .collection('help_requests')
+  //         .doc(request.id)
+  //         .update({'status': 'completed'});
+  //     Get.snackbar('Success', 'Request marked as completed');
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Failed to mark request as completed.');
+  //   }
+  // }
 }

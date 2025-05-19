@@ -1,37 +1,42 @@
-import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
+import 'package:get/get.dart';
 import 'package:help_on_maps/data/models/help_request.dart';
+import 'package:help_on_maps/routes/app_pages.dart';
+import 'package:help_on_maps/services/chat/chat_service.dart';
+import 'package:help_on_maps/services/help_request/help_request_service.dart';
 
 class HelpRequestController extends GetxController {
+  final service = HelpRequestService();
+
   var isLoading = false.obs;
+  Stream<List<HelpRequest>> get requestsStream => service.watchActive();
 
   Future<void> createHelpRequest({
     required String title,
     required String description,
   }) async {
     isLoading.value = true;
+    try {
+      await service.create(title: title, description: description);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-    final location = Location();
-    final locData = await location.getLocation();
+  Future<void> completeRequest(String requestId) {
+    return service.complete(requestId);
+  }
 
-    final user = FirebaseAuth.instance.currentUser;
+  Future<void> offerHelp(String requestId, String requestUserId) async {
+    final helperId = FirebaseAuth.instance.currentUser!.uid;
 
-    final helpRequest = HelpRequest(
-      id: '', 
-      userId: user?.uid ?? '',
-      title: title,
-      description: description,
-      location: LatLng(locData.latitude!, locData.longitude!),
-      createdAt: DateTime.now(),
-      status: 'active',
-      helperId: null,
-    );
+  await service.offerHelp(requestId, helperId);
 
-    await FirebaseFirestore.instance.collection('help_requests').add(helpRequest.toMap());
+  final chatId = await Get.find<ChatService>().getOrCreateChatId(requestUserId);
 
-    isLoading.value = false;
+  Get.toNamed(AppPages.chatPageDetail, arguments: {
+    'chatId': chatId,
+    'otherUserId': requestUserId,
+  });
   }
 }
