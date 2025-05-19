@@ -23,19 +23,53 @@ class HelpRequestPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade100,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+              ),
+            child: Column(
+                children: [
+                  Image.asset(
+                    'assets/images/HelpMap.png',
+                    height: 120,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'People Need Help',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: Colors.teal.shade900,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Browse requests nearby and offer your help',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.teal.shade700,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'Peoples Need Help',
+                    'Request List',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
               ],
             ),
-
-            SizedBox(height: 8),
 
             Expanded(
               child: StreamBuilder<List<HelpRequest>>(
@@ -49,7 +83,10 @@ class HelpRequestPage extends StatelessWidget {
                     return Center(child: CircularProgressIndicator());
                   }
 
-                  final list = snapshot.data ?? [];
+                  final list = snapshot.data!;
+                  if (list.isEmpty) {
+                    return const Center(child: Text('No active requests.'));
+                  }
                   return ListView.builder(
                     padding: EdgeInsets.all(16),
                     itemCount: list.length,
@@ -57,6 +94,11 @@ class HelpRequestPage extends StatelessWidget {
                       final request = list[index];
                       final isOwnRequest = request.userId == currentUserId;
                       return Card(
+                        color: Colors.teal.shade100,
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         margin: EdgeInsets.only(bottom: 16),
                         child: ListTile(
                           title: Text(
@@ -129,6 +171,7 @@ class HelpRequestPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Get.toNamed(AppPages.createHelpRequestPage),
+        backgroundColor: Colors.teal.shade100,
         child: Icon(Icons.add),
       ),
     );

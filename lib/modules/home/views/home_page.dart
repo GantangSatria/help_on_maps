@@ -24,6 +24,7 @@ class HomePage extends GetView<HomeController> {
         ),
         child: AppBar(
           title: Text('Help Map'),
+          backgroundColor: Colors.teal.shade100,
           actions: [
             IconButton(
               icon: Icon(Icons.person),
@@ -34,6 +35,7 @@ class HomePage extends GetView<HomeController> {
       ),
       body: pages[controller.selectedIndex.value],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.teal.shade100,
         currentIndex: controller.selectedIndex.value,
         onTap: controller.changeTab,
         items: [

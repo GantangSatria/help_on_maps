@@ -10,7 +10,8 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profile')),
+      backgroundColor: Colors.teal.shade100,
+      appBar: AppBar(title: Text('Profile'), backgroundColor: Colors.teal.shade100,),
       body: Obx(() {
         if (profileController.isLoading.value) {
           return Center(child: CircularProgressIndicator());

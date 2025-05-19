@@ -38,6 +38,7 @@ class ChatDetailPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal.shade100,
         title: FutureBuilder<String>(
           future: chatController.userName(otherUserId),
           builder: (context, snapshot) {
