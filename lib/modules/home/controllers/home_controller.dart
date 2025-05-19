@@ -11,9 +11,13 @@ class HomeController extends GetxController {
     selectedIndex.value = index;
   }
 
-    void focusOnRequest(LatLng location, String requestId) {
+  void focusOnRequest(LatLng location, String requestId) {
     focusLocation.value = location;
     highlightRequestId.value = requestId;
     changeTab(0);
+  }
+
+  void clearFocus() {
+    highlightRequestId.value = null;
   }
 }

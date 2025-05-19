@@ -10,12 +10,10 @@ class MapPage extends StatelessWidget {
 
   final MapService _mapService = Get.put<MapService>(
     MapService(),
-    permanent: true,
   );
 
   late final MapPageController controller = Get.put<MapPageController>(
     MapPageController(_mapService),
-    permanent: true,
   );
 
   @override
@@ -26,7 +24,7 @@ class MapPage extends StatelessWidget {
         if (currentLoc == null) {
           return const Center(child: CircularProgressIndicator());
         }
-        final highlightId = controller.highlightRequestId;
+        final highlightId = controller.homeController.highlightRequestId.value;
 
         final markers = <Marker>[
           Marker(

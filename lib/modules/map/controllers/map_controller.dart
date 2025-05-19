@@ -16,7 +16,6 @@ class MapPageController extends GetxController {
   final requests = <HelpRequest>[].obs;
   String? get highlightRequestId => homeController.highlightRequestId.value;
 
-  // ignore: unused_field
   LatLng? _destination;
 
   @override
@@ -36,5 +35,16 @@ class MapPageController extends GetxController {
     if (start == null) return;
     _destination = destination;
     routePoints.value = await mapService.route(start, destination);
+  }
+
+  void clearRoute() {
+    routePoints.clear();
+    _destination = null;
+  }
+
+  @override
+  void onClose() {
+    routePoints.clear();
+    super.onClose();
   }
 }
