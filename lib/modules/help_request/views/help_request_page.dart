@@ -133,30 +133,4 @@ class HelpRequestPage extends StatelessWidget {
       ),
     );
   }
-
-  // Future<void> _offerHelp(HelpRequest request, String currentUserId) async {
-  //   await FirebaseFirestore.instance
-  //       .collection('help_requests')
-  //       .doc(request.id)
-  //       .update({'helperId': currentUserId, 'status': 'in_progress'});
-
-  //   final chatId = await chatController.getOrCreateChatId(request.userId);
-
-  //   Get.toNamed(
-  //     AppPages.chatPageDetail,
-  //     arguments: {'chatId': chatId, 'otherUserId': request.userId},
-  //   );
-  // }
-
-  // Future<void> _completeRequest(request) async {
-  //   try {
-  //     await FirebaseFirestore.instance
-  //         .collection('help_requests')
-  //         .doc(request.id)
-  //         .update({'status': 'completed'});
-  //     Get.snackbar('Success', 'Request marked as completed');
-  //   } catch (e) {
-  //     Get.snackbar('Error', 'Failed to mark request as completed.');
-  //   }
-  // }
 }
